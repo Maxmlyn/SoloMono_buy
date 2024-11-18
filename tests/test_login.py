@@ -1,5 +1,6 @@
 import time
 import pytest
+from selenium.webdriver.common.bidi.cdp import session_context
 
 from pages.LoginPopup import LoginPopup
 
@@ -9,16 +10,28 @@ class TestLogin:
         self.login_popup = LoginPopup(self.driver)
 
     @pytest.fixture
-    def test_login_into_system(self):
+    def test_run_site(self):
         self.login_popup.open()
+
+    @pytest.fixture
+    def test_open_login_popup(self, test_run_site):
         self.login_popup.open_login_popup()
-        self.login_popup.enter_email('email')
-        self.login_popup.enter_password('password')
+
+    @pytest.fixture
+    def test_fill_in_email(self, test_open_login_popup):
+        self.login_popup.enter_email('maksym.sukhomlyn91+1@gmail.com')
+
+    @pytest.fixture
+    def test_fill_in_password(self, test_fill_in_email):
+        self.login_popup.enter_password('123456')
+
+    @pytest.fixture
+    def test_submit(self, test_fill_in_password):
         self.login_popup.click_login_button()
 
     @pytest.fixture
-    def test_user_is_logged_in(self, test_login_into_system):
-        assert self.login_popup.logged_in() == "My account"
+    def test_user_is_logged_in(self, test_submit):
+        assert self.login_popup.user_is_logged_in() == "My account"
         print("User is logged in successfully")
 
         title = self.login_popup.get_site_title()

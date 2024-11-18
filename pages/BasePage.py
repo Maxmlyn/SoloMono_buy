@@ -1,3 +1,5 @@
+import pytest
+
 from conftest import driver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -6,7 +8,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class BasePage:
 
-    MAIN_URL = "https://demo.solomono.net/"
+    MAIN_URL = "https://demo.solomono.net"
 
 #List of page locators
     LOC_LANGUAGE = ('xpath', "//button[contains(@class, 'language-dropdown-button')]")
@@ -16,6 +18,7 @@ class BasePage:
     LOC_PAYMENT_AND_SHOPPING_LINK = ""
     LOC_WARRANTY_LINK = ""
     LOC_CONTACTS_LINK = ""
+    LOC_LOGIN_LINK = ("xpath", "//*[contains(@class, 'enter_link')]")
     LOC_HOME_LOGO = ""
     LOC_QUICK_FIND_INPUT = ('xpath', "//input[@id='searchpr']")
     LOC_QUICK_FIND_SEARCH_ICON = ('xpath', "//button[@id='search-form-button']")
@@ -30,13 +33,14 @@ class BasePage:
     LOC_ACCESSORIES_TAB = ""
     LOC_SCROLL_ICON = ('xpath', "//div[contains(@class, 'scrollup')]")
     LOC_SEARCH_RESULT = "//h1[contains(@class, 'category_heading')]"
+    LOC_MY_ACCOUNT_BUTTON = ("xpath", "//div[contains(@class, 'enter_registration')]//a[@href='account_history.php']")
 
 # Page methods
     def __init__(self, driver):
         self.driver: WebDriver = driver
 
     def open(self):
-        self.driver.get(self.MAIN_URL + self.PAGE_URL)
+        self.driver.get(f"{self.MAIN_URL}{self.PAGE_URL}")
 
     def get_site_title(self):
         return self.driver.title
@@ -59,3 +63,12 @@ class BasePage:
         search_icon.click()
         search_result_text = WebDriverWait(self.driver, 10).until(EC.presence_of_element_located((By.XPATH, self.LOC_SEARCH_RESULT))).text
         return search_result_text
+
+    def open_login_popup(self):
+        self.driver.find_element(*self.LOC_LOGIN_LINK).click()
+
+    def get_login_link_text(self):
+        return self.driver.find_element(*self.LOC_LOGIN_LINK).text
+
+    def user_is_logged_in(self):
+        return self.driver.find_element(*self.LOC_MY_ACCOUNT_BUTTON).text
